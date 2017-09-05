@@ -40,7 +40,12 @@ def custom_score(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    return float(len(game.get_legal_moves(player)))
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    if own_moves + opp_moves == 0:
+        return float("inf")
+    else:
+        return float(own_moves / (own_moves + opp_moves))
 
 
 def custom_score_2(game, player):
@@ -104,9 +109,13 @@ def custom_score_3(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    w, h = game.width / 2., game.height / 2.
-    y, x = game.get_player_location(player)
-    return float((h - y)**2 + (w - x)**2)
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
+    if opp_moves == 0:
+        return float("inf")
+    else:
+        return float(own_moves / opp_moves)
 
 
 class IsolationPlayer:
@@ -421,6 +430,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         if not bool(game.get_legal_moves()):
             return (-1, -1)
         else:
+            # in AB-pruning algorithm, need to initialize with a Max call
             best_move = game.get_legal_moves()[0]
             best_score = float("-inf")
 
